@@ -5,7 +5,8 @@
 */
 // I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
+fn sort<T>(array: &mut [T])
+where T:Ord{
 	//TODO
 }
 #[cfg(test)]
