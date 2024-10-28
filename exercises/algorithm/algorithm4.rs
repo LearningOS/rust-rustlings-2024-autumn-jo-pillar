@@ -3,7 +3,9 @@
     This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+use std::borrow::{Borrow, BorrowMut};
+
+//
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::sync::BarrierWaitResult;
@@ -50,33 +52,50 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
-        let mut pos = &mut self.root;
-        while let Some(ref mut node) = pos {
-            if node.value > value {
-                if node.left.is_none() {
-                    node.left = Some(Box::new(TreeNode::new(value)));
-                    break;
+        if self.root.is_none(){
+            self.root= Some(Box::new(TreeNode::new(value)));
+            return;
+        }
+        let mut pos = self.root.as_mut().unwrap();
+        loop {
+            if pos.value > value {
+                if pos.left.is_none() {
+                    pos.left = Some(Box::new(TreeNode::new(value)));
+                   return;
                 }else{
-                    pos=&mut node.left;
+                    pos=pos.left.as_mut().unwrap();
                 }
-            }else {
-                if node.value<value{
-                    if node.right.is_none(){
-                        node.right=Some(Box::new(TreeNode::new(value)));
-                        break;
+            }else if pos.value<value {
+                    if pos.right.is_none() {
+                        pos.right = Some(Box::new(TreeNode::new(value)));
+                       return;
+                    }else{
+                        pos=pos.right.as_mut().unwrap();
                     }
-                }else{
-                    pos=&mut node.right;
-                }
+            }else{
+                return;
             }
         }
+
 
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        self.search_node(&self.root, value)
+    }
+
+    fn search_node(&self, node: &Option<Box<TreeNode<T>>>, value: T) -> bool {
+        match node {
+            Some(n) => {
+                match value.cmp(&n.value) {
+                    Ordering::Less => self.search_node(&n.left, value),
+                    Ordering::Greater => self.search_node(&n.right, value),
+                    Ordering::Equal => true,
+                }
+            }
+            None => false,
+        }
     }
 }
 

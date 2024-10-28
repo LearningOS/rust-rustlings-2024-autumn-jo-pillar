@@ -3,11 +3,28 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
+// 
+
+use std::mem::swap;
 
 fn sort<T>(array: &mut [T])
-where T:Ord{
+where T:Ord + std::fmt::Display{
 	//TODO
+    
+    for pre in 0..array.len(){
+        let mut minium=pre;
+        for cur in pre+1..array.len(){
+            match  array[cur].cmp(&array[minium]) {
+                std::cmp::Ordering::Less=>minium=cur,
+                _=>continue
+            };
+            
+            // swap::<T>(&mut array[pre], &mut array[largest]);
+        }
+        array.swap(pre, minium);
+    }
+   
+
 }
 #[cfg(test)]
 mod tests {
