@@ -2,7 +2,7 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
+// 
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -15,22 +15,7 @@ impl fmt::Display for NodeNotInGraph {
 }
 pub struct UndirectedGraph {
     adjacency_table: HashMap<String, Vec<(String, i32)>>,
-}
-impl Graph for UndirectedGraph {
-    fn new() -> UndirectedGraph {
-        UndirectedGraph {
-            adjacency_table: HashMap::new(),
-        }
-    }
-    fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>> {
-        &mut self.adjacency_table
-    }
-    fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
-        &self.adjacency_table
-    }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+	
 }
 pub trait Graph {
     fn new() -> Self;
@@ -38,11 +23,14 @@ pub trait Graph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
         //TODO
-		true
+		if ! self.contains(node) {
+			self.adjacency_table_mutable().insert(String::from(node),Vec::<(String, i32)>::new()).is_none()
+		}else{
+			false
+		}
+       
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_edge(&mut self, edge: (&str, &str, i32));
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }
@@ -57,6 +45,37 @@ pub trait Graph {
             }
         }
         edges
+    }
+}
+
+impl Graph for UndirectedGraph {
+    fn new() -> UndirectedGraph {
+        UndirectedGraph {
+            adjacency_table: HashMap::new(),
+        }
+    }
+    fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>> {
+        &mut self.adjacency_table
+    }
+    fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
+        &self.adjacency_table
+    }
+    fn add_edge(&mut self, edge: (&str, &str, i32)) {
+        self.add_node(edge.0);
+        self.add_node(edge.1);
+
+        self.add_single_edge(edge.0, edge.1, edge.2);
+        self.add_single_edge(edge.1, edge.0, edge.2);
+    }
+}
+
+impl UndirectedGraph {
+    fn add_single_edge(&mut self, from: &str, to: &str, weight: i32) {
+		
+        let edges = self.adjacency_table_mutable().get_mut(from).unwrap();
+        if !edges.iter().any(|(node, w)| node == to && *w == weight) {
+            edges.push((String::from(to), weight));
+        }
     }
 }
 #[cfg(test)]
